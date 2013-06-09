@@ -12,3 +12,4 @@ color shine
 
 Bundle 'https://github.com/gmarik/vundle.git'
 Bundle 'https://github.com/terryma/vim-multiple-cursors.git'
+Bundle 'ctrlp.vim'
