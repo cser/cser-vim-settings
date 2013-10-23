@@ -18,6 +18,11 @@ set fileencoding=utf-8
 set nobackup
 set noswapfile
 
+let g:ctrlp_by_filename = 1
+
+map git :silent !"C:\Program Files (x86)\Git\bin\sh.exe" --login -i<CR>
+map make :silent make<CR>:copen<CR>
+
 color shine
 
 let NERDTreeIgnore=['\.meta$']
