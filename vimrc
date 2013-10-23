@@ -11,21 +11,21 @@ syntax on
 set incsearch
 set hlsearch
 
-set bomb
-set encoding=utf-8
-set fileencoding=utf-8
+set encoding=utf-8 bomb
+set fileencoding=utf-8 bomb
 
 set nobackup
 set noswapfile
+set errorformat ^=\ %#%f(%l\\\,%c):\ %m
 
 let g:ctrlp_by_filename = 1
-
-map git :silent !"C:\Program Files (x86)\Git\bin\sh.exe" --login -i<CR>
-map make :silent make<CR>:copen<CR>
 
 color shine
 
 let NERDTreeIgnore=['\.meta$']
+
+map git :silent !"C:\Program Files (x86)\Git\bin\sh.exe" --login -i<CR>
+map make :silent make<CR>:copen<CR>
 
 nnoremap <silent> <F2> :Rgrep<cr>
 nnoremap <silent> <S-F2> :RgrepAdd<cr>
@@ -38,3 +38,4 @@ Bundle 'https://github.com/scrooloose/nerdtree.git'
 Bundle 'https://github.com/jistr/vim-nerdtree-tabs.git'
 Bundle 'grep.vim'
 Bundle 'matchparenpp'
+Bundle 'https://github.com/tpope/vim-fugitive.git'
