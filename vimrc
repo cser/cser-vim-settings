@@ -13,6 +13,8 @@ set smartindent
 " buffers settings
 set hidden
 set autowrite
+set showmode
+set backspace=2
 nmap <C-h> :bprevious<CR>
 nmap <C-l> :bnext<CR>
 nmap <C-w>x :bp <BAR> bd #<CR>
@@ -37,6 +39,9 @@ Plugin 'https://github.com/xolox/vim-session.git'
 Plugin 'https://github.com/scrooloose/nerdtree.git'
 Plugin 'https://github.com/jlanzarotta/bufexplorer.git'
 Plugin 'https://github.com/Lokaltog/vim-easymotion.git'
+Plugin 'https://github.com/terryma/vim-multiple-cursors.git'
+Plugin 'https://github.com/vim-scripts/Son-of-Obisidian.git'
+Plugin 'https://github.com/adampasz/vimfdb.git'
 call vundle#end()
 filetype plugin indent on
 
@@ -44,6 +49,7 @@ filetype plugin indent on
 set laststatus=2
 let g:airline#extensions#tabline#enabled=1
 let g:airline_powerline_fonts=1
+let g:airline_theme="zenburn"
 
 " << vim-colorscheme-switcher >>
 map ,cn :NextColorScheme<cr>
@@ -86,15 +92,52 @@ let g:solarized_termcolors=256
 "color lucius
 color mac_classic
 if has("gui_running")
-	"set guifont="Liberation Mono for Powerline 12"
-	color gruvbox
-else
-	let g:airline_theme="zenburn"
+	set guifont=Liberation\ Mono\ for\ Powerline\ 12
+	set guioptions-=m  "remove menu bar
+	set guioptions-=T  "remove toolbar
+	set guioptions-=r  "remove right-hand scroll bar
+	set guioptions-=L  "remove left-hand scroll bar
+	set lines=53
+	set columns=150
 endif
 
 map! <C-Space> <C-x><C-o>
 
 " find selection
 vnoremap * y :execute ":let @/=@\""<CR>n
+
+" munit
+function AppendLine(line)
+	caddexpr a:line
+	100500 " scroll to bottom
+
+	if match(a:line, 'PASSED') == 0
+		:highlight GreenLine guibg=LightGreen
+		:autocmd BufReadPost quickfix match GreenLine /PASSED$/
+	elseif match(a:line, '\d\+:FAILED') != -1
+		:highlight RedLine guibg=LightRed
+		:autocmd BufReadPost quickfix match RedLine /FAILED$/
+	endif
+endfunction
+python << EOF
+import vim
+import subprocess
+def output_lines_incrementally(cmd):
+	vim.command('copen')
+	vim.command('redraw')
+	vim.command('call setqflist([])')
+	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+	for line in iter(p.stdout.readline, ''):
+		vim.command('call AppendLine("' + line + '")')
+		vim.command('redraw')
+EOF
+:command! -nargs=0 RunTests python output_lines_incrementally('haxelib run munit test')
+function SaveAndRunTests()
+	if expand("%") != ''
+		:w
+	endif
+	:RunTests
+endfunction
+map ,t :call SaveAndRunTests()<cr>
 
 set exrc
