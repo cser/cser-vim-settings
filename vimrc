@@ -101,7 +101,9 @@ if has("gui_running")
 	set columns=150
 endif
 
+" other
 map! <C-Space> <C-x><C-o>
+map ,w :w<cr>
 
 " find selection
 vnoremap * y :execute ":let @/=@\""<CR>n
@@ -112,10 +114,10 @@ function AppendLine(line)
 	100500 " scroll to bottom
 
 	if match(a:line, 'PASSED') == 0
-		:highlight GreenLine guibg=LightGreen
+		:highlight GreenLine guibg=Green
 		:autocmd BufReadPost quickfix match GreenLine /PASSED$/
 	elseif match(a:line, '\d\+:FAILED') != -1
-		:highlight RedLine guibg=LightRed
+		:highlight RedLine guibg=Red
 		:autocmd BufReadPost quickfix match RedLine /FAILED$/
 	endif
 endfunction
@@ -123,12 +125,16 @@ python << EOF
 import vim
 import subprocess
 def output_lines_incrementally(cmd):
+	def unescape(text):
+		text = text.replace('\\', '\\\\')
+		text = text.replace('"', '\\"')
+		return text
 	vim.command('copen')
 	vim.command('redraw')
 	vim.command('call setqflist([])')
 	p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 	for line in iter(p.stdout.readline, ''):
-		vim.command('call AppendLine("' + line + '")')
+		vim.command('call AppendLine("' + unescape(line) + '")')
 		vim.command('redraw')
 EOF
 :command! -nargs=0 RunTests python output_lines_incrementally('haxelib run munit test')
